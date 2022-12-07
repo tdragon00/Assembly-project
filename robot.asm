@@ -140,9 +140,8 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 	#	of each robot. The position of each robot is updated.
 
 	moveRobots:
-	            # saving the register for the call
-        addiu $sp, $sp, -4
-        sw $ra, 0($sp)
+	           	addi $sp, $sp-4 # saving the register for the call
+			sw $ra, 0($sp)
         #moving the address to the stack pointer
 
 
@@ -163,7 +162,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 		li $s4,0			#  for (i=0;i<4;i++) {
 	loop:
-	               lw $a0,($s0)  # placing robot x into the variable slot  arg $a0.
+	               lw $a0,0($s0)  # placing robot x into the variable slot  arg $a0.
 	               move $a1,$s2  #placing human x into the variabe slot arg $a1
 
 	               jal getNew #    *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
@@ -175,7 +174,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 
 
-		     lw $a0,0($s1)  # placing robot y into the variable slot  arg $a0.
+		             lw $a0,0($s1)  # placing robot y into the variable slot  arg $a0.
                      move $a1,$s3  #placing human y into the variabe slot arg $a1
 
                      jal getNew #    *ptry = getNew(*ptrX,arg2); input we use $a0,$a1
@@ -183,31 +182,33 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
                                 			                    #the return value of getNew is saved in $v0
 
 
-					#    *ptrY = getNew(*ptrY,arg3);
 
 
 
 
-				bne $s0,$s2,inc        	# x check  check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
+
+			    bne $s0,$s2,inc        	# x check  check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
 		        bne $s1,$s3,inc           # y check
 
-				li $s5,0         #      alive = 0;
-		j endfor 		#      breaking since we are no longer alive ;
-					#    }
+				li $s5,0          #      alive = 0;
+		j endfor 			  #      breaking since we are no longer alive ;
+						  #    }
 	inc:
-	                    addi $s0, $s0, 4 #    ptrX++;
-			    addi $s1, $s1, 4 #    ptrY++;
-			    addi $s4,$s4,1
+	            addi $s0, $s0, 4 		  #    ptrX++;
+			    addi $s1, $s1, 4 	  #    ptrY++;
+
+			    addi $s4,$s4,1        #increminting loop
 			    bne $s4,4, loop
 
-						#  }
+						  #  }
 
 
-	endfor:			#  return alive;
-        #we are jumping back after we have saved the changes via $ra
-
-        lw $ra, 0($sp) # retrieving our address from the stack pointer
-        addiu $sp, $sp, 4 #removing ths place on the stack
+	endfor:					  #  return alive;
+        				 	  #we are jumping back after we have saved the changes via $ra
+			lw $ra, 0($sp)
+			addi $sp, $sp 4 # saving the register for the call
+			
+     
 
 
 		jr $ra			#}
