@@ -236,12 +236,12 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 	gelse1:	blez	$t0,gelse2	#  else if (temp > 0)
 		      sub	$v0,$a0,1	#    result = arg0 - 1;
 		      j	exitgelse
-	gelse2:		                #  else if (temp == 0)
-			                      #    result = arg0;
-
-	gelse3:	                 	#  else if (temp > -10)
-			                      #    result = arg0 + 1;
-
+	gelse2:	bne $v0, 0, gelse3	                #  else if (temp == 0) # not sure here
+			 move $v0, $t0                #    result = arg0;
+        j exitgelse
+	gelse3:	   ble $t0, -10, gelse4              	#  else if (temp > -10)
+			 add $v0, $a0, 1                     #    result = arg0 + 1;
+            j exitgelse
 	gelse4:	bgt	$t0,-10,exitgelse  #  else if (temp <= -10)
 				  add	$v0,$a0,10	#    result = arg0 + 10;
 	exitgelse:
