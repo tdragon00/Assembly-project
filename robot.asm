@@ -69,11 +69,12 @@ main_else2:
 main_else3:	bne	$s3,-2,main_exitif	#    else if (move == -2)
 	add	$s2,$s2,-1	#      myY--;
 
-main_exitif:	la	$a0,x		#    status = moveRobots(&x[0],&y[0],myX,myY);
-	la	$a1,y
+main_exitif:
+    la	$a0,x		#    status = moveRobots(&x[0],&y[0],myX,myY); loads address of array
+	la	$a1,y       #loading address of y
 	move	$a2,$s1
 	move	$a3,$s2
-	jal	moveRobots
+	jal	moveRobots  #saves address of move but we jump to back to the  move when we return
 	move	$s4,$v0
 
 	la	$a0,str3	#    cout << "Your coordinates: " << myX
@@ -153,12 +154,13 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 		move $s2,$a2
 		move $s3,$a3
 
-		move $s0,$a0	        	#  ptrX = arg0;
-              move $s1,$a1			#  ptrY = arg1;
+		move $s0,$a0	        #  ptrX = arg0;
+        move $s1,$a1			#  ptrY = arg1;
 
 
 		li $s4,0			#  for (i=0;i<4;i++) {
-	loop: 				       #    *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
+	loop:
+	                #    *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
 		                                   #jal getNew  return value we use $v
 			                      #the return value of getNew is saved in $v0
 
@@ -167,11 +169,11 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 
 
-				        	#    if ((*ptrX == arg2) && (*ptrY == arg3)) {
-		                            #.....
+				bne ,$s2,inc        	#   check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
+		        bne ,$s3, inc                   #.....
 
-				               #      alive = 0;
-		j endfor 		#      break;
+				li $s5,0         #      alive = 0;
+		j endfor 		#      breaking since we are no longer alive ;
 					#    }
 	inc:					#    ptrX++;
 						#    ptrY++;
@@ -179,7 +181,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 
 	endfor:			#  return alive;
-
+        #we are jumping back after we have saved the changes via $ra
 
 
 
@@ -187,6 +189,8 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 
 		jr $ra			#}
+
+
 
 	#	int getNew(int arg0, int arg1)
 	#
