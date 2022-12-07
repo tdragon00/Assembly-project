@@ -163,11 +163,11 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 		li $s4,0			#  for (i=0;i<4;i++) {
 	loop:
-	               move $a0,$s0  # placing robot x into the variable slot  arg $a0.
+	               lw $a0,($s0)  # placing robot x into the variable slot  arg $a0.
 	               move $a1,$s2  #placing human x into the variabe slot arg $a1
 
 	               jal getNew #    *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
-		            move $s0, $v0                            #jal getNew  return value we use $v
+		            sw $v0, 0($s0)                            #jal getNew  return value we use $v
 			                    #the return value of getNew is saved in $v0
 
 
@@ -175,11 +175,11 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 
 
-			move $a0,$s1  # placing robot y into the variable slot  arg $a0.
+		     lw $a0,0($s1)  # placing robot y into the variable slot  arg $a0.
                      move $a1,$s3  #placing human y into the variabe slot arg $a1
 
                      jal getNew #    *ptry = getNew(*ptrX,arg2); input we use $a0,$a1
-                     move $s1, $v0                            #jal getNew  return value we use $v
+                     sw $v0, 0($s1)                            #jal getNew  return value we use $v
                                 			                    #the return value of getNew is saved in $v0
 
 
@@ -207,7 +207,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
         #we are jumping back after we have saved the changes via $ra
 
         lw $ra, 0($sp) # retrieving our address from the stack pointer
-        addiu $sp, $sp, 4
+        addiu $sp, $sp, 4 #removing ths place on the stack
 
 
 		jr $ra			#}
