@@ -140,7 +140,10 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 	#	of each robot. The position of each robot is updated.
 
 	moveRobots:
-
+	            # saving the register for the call
+        addiu $sp, $sp, -4
+        sw $ra, 0($sp)
+        #moving the address to the stack pointer
 
 
 
@@ -151,8 +154,8 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 
 		li $s5,1			#  alive = 1;
-		move $s2,$a2
-		move $s3,$a3
+		move $s2,$a2        # human x copy
+		move $s3,$a3        # human y copy
 
 		move $s0,$a0	        #  ptrX = arg0;
         move $s1,$a1			#  ptrY = arg1;
@@ -160,32 +163,51 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 		li $s4,0			#  for (i=0;i<4;i++) {
 	loop:
-	                #    *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
-		                                   #jal getNew  return value we use $v
-			                      #the return value of getNew is saved in $v0
+	               move $a0,$s0  # placing robot x into the variable slot  arg $a0.
+	               move $a1,$s2  #placing human x into the variabe slot arg $a1
 
-					        #    *ptrY = getNew(*ptrY,arg3);
+	               jal getNew #    *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
+		            move $s0, $v0                            #jal getNew  return value we use $v
+			                    #the return value of getNew is saved in $v0
 
 
 
 
-				bne ,$s2,inc        	#   check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
-		        bne ,$s3, inc                   #.....
+
+
+			move $a0,$s1  # placing robot y into the variable slot  arg $a0.
+                     move $a1,$s3  #placing human y into the variabe slot arg $a1
+
+                     jal getNew #    *ptry = getNew(*ptrX,arg2); input we use $a0,$a1
+                     move $s1, $v0                            #jal getNew  return value we use $v
+                                			                    #the return value of getNew is saved in $v0
+
+
+					#    *ptrY = getNew(*ptrY,arg3);
+
+
+
+
+				bne $s0,$s2,inc        	# x check  check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
+		        bne $s1,$s3,inc           # y check
 
 				li $s5,0         #      alive = 0;
 		j endfor 		#      breaking since we are no longer alive ;
 					#    }
-	inc:					#    ptrX++;
-						#    ptrY++;
+	inc:
+	                    addi $s0, $s0, 4 #    ptrX++;
+			    addi $s1, $s1, 4 #    ptrY++;
+			    addi $s4,$s4,1
+			    bne $s4,4, loop
+
 						#  }
 
 
 	endfor:			#  return alive;
         #we are jumping back after we have saved the changes via $ra
 
-
-
-
+        lw $ra, 0($sp) # retrieving our address from the stack pointer
+        addiu $sp, $sp, 4
 
 
 		jr $ra			#}
@@ -215,3 +237,11 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 		      j	exitgelse
 	gelse2:		                #  else if (temp == 0)
 			                      #    result = arg0;
+
+	gelse3:	                 	#  else if (temp > -10)
+			                      #    result = arg0 + 1;
+
+	gelse4:	bgt	$t0,-10,exitgelse  #  else if (temp <= -10)
+				  add	$v0,$a0,10	#    result = arg0 + 10;
+	exitgelse:
+		jr	$31		#} jumps back to where its called this is where the address is stored could also use ra
