@@ -193,7 +193,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 						  #  }
 
 
-	endfor:		move $v0,$S5			# return alive;
+	endfor:		move $v0,$s5			# return alive;
         				 	        #we are jumping back after we have saved the changes via $ra
 			lw $ra, 0($sp)
 			add $sp, $sp 32                # saving the register for the call
