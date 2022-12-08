@@ -1,7 +1,7 @@
-#
-#	A proper program header goes here...
-#
-#
+# Tyler Dewalt and Melany Martinez
+# CSC 256: Machine Strucures 
+# Description: Robot game that gets user input and then moves robot accordingly based on the distance btween robot and user.
+
 	.data
 x:	.word	0:4	# x-coordinates of 4 robots
 y:	.word	0:4	# y-coordinates of 4 robots
@@ -60,21 +60,21 @@ main_while:
 	b	main_exitif
 main_else1:
 	bne	$s3,-1,main_else2	#    else if (move == -1)
-	add	$s1,$s1,-1	#      myX--;
+	add	$s1,$s1,-1	        #      myX--;
 	b	main_exitif
 main_else2:
 	bne	$s3,2,main_else3	#    else if (move == 2)
-	add	$s2,$s2,1	#      myY++;
+	add	$s2,$s2,1	        #      myY++;
 	b	main_exitif
 main_else3:	bne	$s3,-2,main_exitif	#    else if (move == -2)
 	add	$s2,$s2,-1	#      myY--;
 
 main_exitif:
-    la	$a0,x		#    status = moveRobots(&x[0],&y[0],myX,myY); loads address of array
+    la	$a0,x		    #   status = moveRobots(&x[0],&y[0],myX,myY); loads address of array
 	la	$a1,y       #loading address of y
 	move	$a2,$s1
 	move	$a3,$s2
-	jal	moveRobots  #saves address of move but we jump to back to the  move when we return
+	jal	moveRobots     #saves address of move but we jump to back to the  move when we return
 	move	$s4,$v0
 
 	la	$a0,str3	#    cout << "Your coordinates: " << myX
@@ -95,9 +95,9 @@ main_exitif:
 
 	la	$s5,x
 	la	$s6,y
-	li	$s0,0		#    for (i=0;i<4;i++)
+	li	$s0,0		        #    for (i=0;i<4;i++)
 main_for:	la	$a0,str4	#      cout << "Robot at " << x[i] << " "
-	li	$v0,4		#           << y[i] << endl;
+	li	$v0,4		        #           << y[i] << endl;
 	syscall
 	lw	$a0,($s5)
 	li	$v0,1
@@ -130,7 +130,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 	#	arg1	$a1	base address of array of y-coordinates
 	#	arg2	$a2	x-coordinate of human (copy in $s2)
 	#	arg3	$a3	y-coordinate of human (copy in $s3)
-	#	ptrX	$s0
+	#	ptrX	$s0 
 	#	ptrY	$s1
 	#	i	$s4
 	#	alive	$s5
@@ -141,60 +141,50 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 	moveRobots:
 	           	addi $sp, $sp-4 # saving the register for the call
-			sw $ra, 0($sp)
-        #moving the address to the stack pointer
+			
+			sw $ra, -4($sp) #moving the address's to the stack pointer 
+					#making space to store register of the robots new coordinates 
+			sw $s0, -8($sp)
+			sw $s1, -12($sp)
+			sw $s2,-16($sp)
+			sw $s3, -20(%sp)
+			sw $s4, -24 ($sp)
+			sw $s5,-28($sp)
+			sw $s6, -32 ($sp)
+			add $sp,$sp, -32  #adds value to register // restors $sp 
+
+			li $s5,1			#  alive = 1;
+			move $s2,$a2        # human x copy
+			move $s3,$a3        # human y copy
+
+			move $s0,$a0	                #  ptrX = arg0;
+               		move $s1,$a1			#  ptrY = arg1;
 
 
-
-
-
-
-
-
-
-		li $s5,1			#  alive = 1;
-		move $s2,$a2        # human x copy
-		move $s3,$a3        # human y copy
-
-		move $s0,$a0	        #  ptrX = arg0;
-        move $s1,$a1			#  ptrY = arg1;
-
-
-		li $s4,0			#  for (i=0;i<4;i++) {
+		         li $s4,0			# for (i=0;i<4;i++) {
 	loop:
-	               lw $a0,0($s0)  # placing robot x into the variable slot  arg $a0.
-	               move $a1,$s2  #placing human x into the variabe slot arg $a1
+	                lw $a0,0($s0)  # placing robot x into the variable slot  arg $a0.
+	                move $a1,$s2  #placing human x into the variabe slot arg $a1
 
-	               jal getNew #    *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
-		            sw $v0, 0($s0)                            #jal getNew  return value we use $v
+	                 jal getNew #       *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
+		         sw $v0, 0($s0)     #jal getNew  return value we use $v
 			                    #the return value of getNew is saved in $v0
 
+			lw $a0,0($s1)  			           # placing robot y into the variable slot  arg $a0.
+                        move $a1,$s3  			           #placing human y into the variabe slot arg $a1
+			jal getNew                                 # *ptry = getNew(*ptrX,arg2); input we use $a0,$a1
+                         sw $v0, 0($s1)                            #jal getNew  return value we use $v
+                                			             #the return value of getNew is saved in $v0
 
 
+			 bne $s0,$s2,inc           # x check  check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
+		         bne $s1,$s3,inc           # y check
 
-
-
-		             lw $a0,0($s1)  # placing robot y into the variable slot  arg $a0.
-                     move $a1,$s3  #placing human y into the variabe slot arg $a1
-
-                     jal getNew #    *ptry = getNew(*ptrX,arg2); input we use $a0,$a1
-                     sw $v0, 0($s1)                            #jal getNew  return value we use $v
-                                			                    #the return value of getNew is saved in $v0
-
-
-
-
-
-
-
-			    bne $s0,$s2,inc        	# x check  check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
-		        bne $s1,$s3,inc           # y check
-
-				li $s5,0          #      alive = 0;
-		j endfor 			  #      breaking since we are no longer alive ;
+		         li $s5,0          #      alive = 0;
+		         j endfor 	  #      breaking since we are no longer alive ;
 						  #    }
 	inc:
-	            addi $s0, $s0, 4 		  #    ptrX++;
+	                    addi $s0, $s0, 4 		  #    ptrX++;
 			    addi $s1, $s1, 4 	  #    ptrY++;
 
 			    addi $s4,$s4,1        #increminting loop
@@ -203,10 +193,10 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 						  #  }
 
 
-	endfor:					  #  return alive;
-        				 	  #we are jumping back after we have saved the changes via $ra
+	endfor:		move $v0,$S5			# return alive;
+        				 	        #we are jumping back after we have saved the changes via $ra
 			lw $ra, 0($sp)
-			addi $sp, $sp 4 # saving the register for the call
+			add $sp, $sp 32                # saving the register for the call
 			
      
 
@@ -228,6 +218,8 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 	#	If the absolute difference is < 10, the robot coordinate
 	#	moves 1 unit closer to the human coordinate.
 
+						# using reverse flowchart in order to return the new coordinate o the robot
+						#based on the human coordinate
 	getNew:				#{
 		sub	$t0,$a0,$a1	#  temp = arg0 - arg1;
 		blt	$t0,10,gelse1	#  if (temp >= 10)
@@ -236,12 +228,12 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 	gelse1:	blez	$t0,gelse2	#  else if (temp > 0)
 		      sub	$v0,$a0,1	#    result = arg0 - 1;
 		      j	exitgelse
-	gelse2:	bne $v0, 0, gelse3	                #  else if (temp == 0) # not sure here
-			 move $v0, $t0                #    result = arg0;
-        j exitgelse
+	gelse2:		 bnez $t0, 0, gelse3	                #  else if (temp == 0) # not sure here
+			 move $v0, $t0                   #    result = arg0;
+                         j exitgelse
 	gelse3:	   ble $t0, -10, gelse4              	#  else if (temp > -10)
-			 add $v0, $a0, 1                     #    result = arg0 + 1;
-            j exitgelse
+	           add $v0, $a0, 1                     #    result = arg0 + 1;
+                   j exitgelse
 	gelse4:	bgt	$t0,-10,exitgelse  #  else if (temp <= -10)
 				  add	$v0,$a0,10	#    result = arg0 + 10;
 	exitgelse:
