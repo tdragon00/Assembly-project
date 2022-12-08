@@ -147,7 +147,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 			sw $s0, -8($sp)
 			sw $s1, -12($sp)
 			sw $s2,-16($sp)
-			sw $s3, -20(%sp)
+			sw $s3, -20($sp)
 			sw $s4, -24 ($sp)
 			sw $s5,-28($sp)
 			sw $s6, -32 ($sp)
