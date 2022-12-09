@@ -164,14 +164,14 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 		         li $s4,0			# for (i=0;i<4;i++) {
 	loop:
 	                 lw $a0,0($s0)                # placing robot x into the variable slot  arg $a0.
-	                 move $a1,$s2                 #placing human x into the variabe slot arg $a1
+	                 move $a1,$s2                 #placing human x into the variabe slot arg $a1 problem child
 
 	                 jal getNew #       *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
 		         sw $v0, 0($s0)     #jal getNew  return value we use $v
 			                    #the return value of getNew is saved in $v0
 
 			 lw $a0,0($s1)  			           # placing robot y into the variable slot  arg $a0.
-                         move $a1,$s3  			                   #placing human y into the variabe slot arg $a1
+                         move $a1,$s3  			                   #placing human y into the variabe slot arg $a1 problem child
 			 jal getNew                                        # *ptry = getNew(*ptrX,arg2); input we use $a0,$a1
                          sw $v0, 0($s1)                                    #jal getNew  return value we use $v
                                 			             #the return value of getNew is saved in $v0
@@ -203,7 +203,7 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 			lw $s2, -16 ($sp)
 			lw $s3, -20($sp)
 			lw $s4, -24 ($sp)
-			lw $s5, -28 ( $sp)
+			#lw $s5, -28 ( $sp)
 			lw $s6, -32 ($sp)       	#retrieved the robots move
      
 
@@ -225,23 +225,23 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 	#	If the absolute difference is < 10, the robot coordinate
 	#	moves 1 unit closer to the human coordinate.
 
-						# using reverse flowchart in order to return the new coordinate o the robot
-						#based on the human coordinate
-	getNew:				#{
-		sub	$t0,$a0,$a1	#  temp = arg0 - arg1;
-		blt	$t0,10,gelse1	#  if (temp >= 10)
-		sub	$v0,$a0,10	#    result = arg0 - 10;
-		j	exitgelse
-	gelse1:	blez	$t0,gelse2	#  else if (temp > 0)
-		      sub	$v0,$a0,1	#    result = arg0 - 1;
-		       j	exitgelse
-	gelse2:		 bnez $t0, gelse3	                #  else if (temp == 0) # not sure here
-			 move $v0, $t0                   #    result = arg0;
-                         j exitgelse
-	gelse3:	   ble $t0, -10, gelse4              	#  else if (temp > -10)
-	           add $v0, $a0, 1                     #    result = arg0 + 1;
-                   j exitgelse
-	gelse4:	 bgt	$t0,-10,exitgelse  #  else if (temp <= -10)
-				  add	$v0,$a0,10	#    result = arg0 + 10;
+							# using reverse flowchart in order to return the new coordinate o the robot
+							#based on the human coordinate
+	getNew:						#{
+			 sub	$t0,$a0,$a1		#  temp = arg0 - arg1;
+			 blt	$t0,10,gelse1		#  if (temp >= 10)
+			 sub	$v0,$a0,10		#    result = arg0 - 10;
+			 j	exitgelse	
+	gelse1:		 blez	$t0,gelse2		#  else if (temp > 0)
+		      	 sub	$v0,$a0,1		#    result = arg0 - 1;
+		       	 j	exitgelse
+	gelse2:		 bnez 	$t0, gelse3	        #  else if (temp == 0) # not sure here
+			 move 	$v0, $a0                #    result = arg0;
+                         j 	exitgelse
+	gelse3:	   	 ble 	$t0, -10, gelse4         #  else if (temp > -10)
+	           	 add 	$v0, $a0, 1              #    result = arg0 + 1;
+                   	 j 	exitgelse
+	gelse4:	 	 bgt	$t0,-10,exitgelse  	 #  else if (temp <= -10)
+			 add	$v0,$a0,10		 #    result = arg0 + 10;
 	exitgelse:
-		jr	$31		#} jumps back to where its called this is where the address is stored could also use ra
+			 jr	$31			 #} jumps back to where its called this is where the address is stored could also use ra
