@@ -168,17 +168,17 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 
 	                 jal getNew #       *ptrX = getNew(*ptrX,arg2); input we use $a0,$a1
 		         sw $v0, 0($s0)     #jal getNew  return value we use $v
-			                    #the return value of getNew is saved in $v0
+			                   #the return value of getNew is saved in $v0
 
 			 lw $a0,0($s1)  			           # placing robot y into the variable slot  arg $a0.
                          move $a1,$s3  			                   #placing human y into the variabe slot arg $a1 problem child
 			 jal getNew                                        # *ptry = getNew(*ptrX,arg2); input we use $a0,$a1
-                         sw $v0, 0($s1)                                    #jal getNew  return value we use $v
-                                			             #the return value of getNew is saved in $v0
-
-
-			 bne $s0,$s2,inc           # x check  check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
-		         bne $s1,$s3,inc           # y check
+                         sw $v0, 0($s1) 
+                                		                       #jal getNew  return value we use $v
+                         lw $t1, 0($s0)			             #the return value of getNew is saved in $v0
+			 lw $t2, 0($s1)
+			 bne $t1,$s2,inc           # x check  check if robot caught user  if ((*ptrX == arg2) && (*ptrY == arg3)) {
+		         bne $t2,$s3,inc           # y check
 
 		         li $s5,0          #      alive = 0;
 		         j endfor 	   #      breaking since we are no longer alive ;
@@ -193,7 +193,8 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 						  #  }
 
 
-	endfor:		move $v0,$s5			# return alive;
+	endfor:		
+			move $v0,$s5			# return alive;
         				 	        #we are jumping back after we have saved the changes via $ra 
 			lw $ra, 0($sp)
 			add $sp, $sp 32                # saving the register for the call
