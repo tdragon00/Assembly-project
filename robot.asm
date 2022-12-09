@@ -207,7 +207,8 @@ main_exitw:	la	$a0,str5	#  cout << "AAAARRRRGHHHHH... Game over\n";
 			lw $s6, -32 ($sp)       	#retrieved the robots move
      
 
-			jr $ra			#} 
+			jr $ra		               # jumps back to where it was called
+			#} 
 
 
 
